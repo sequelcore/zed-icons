@@ -1,4 +1,4 @@
-// Builds the Sequel icon themes from Material Icon Theme for Zed.
+// Builds the Sequel icon themes from Catppuccin Icons for Zed (Mocha flavor).
 // Run: node scripts/build.mjs   (clones the pinned upstream into .cache/ on first run)
 //
 // Every icon color is remapped in OKLCH:
@@ -13,8 +13,11 @@ import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync
 import { fromOklch, toOklch } from './color.mjs';
 
 export const UPSTREAM = {
-  repo: 'https://github.com/zed-extensions/material-icon-theme.git',
-  commit: '5ec848638409e4578d9e8c8478041fcab1df15f8',
+  repo: 'https://github.com/catppuccin/zed-icons.git',
+  commit: 'f695ec0d81d53d6776471c3d3cad702cf11670e3',
+  themeFile: 'icon_themes/catppuccin-icons.json',
+  theme: 'Catppuccin Mocha',
+  iconDir: 'icons/mocha',
 };
 
 // Hues shared with the Sequel editor themes (status and terminal colors), in OKLCH degrees.
@@ -39,7 +42,10 @@ export const variants = {
   },
 };
 
-const DEFAULT_FOLDER_ICONS = new Set(['folder.svg', 'folder-open.svg', 'folder-root.svg', 'folder-root-open.svg']);
+const DEFAULT_FOLDER_ICONS = new Set(['_folder.svg', '_folder_open.svg', '_root.svg', '_root_open.svg']);
+// Catppuccin's text and overlay colors carry a slight blue tint (chroma ~0.04); treat
+// anything below this as neutral so it takes the variant's own neutral tint.
+const NEUTRAL_CHROMA = 0.05;
 
 const expand = (hex) => (hex.length === 4 ? '#' + [...hex.slice(1)].map((c) => c + c).join('') : hex);
 const nearestHue = (h) => HUES.reduce((best, x) => (Math.abs(((h - x + 540) % 360) - 180) < Math.abs(((h - best + 540) % 360) - 180) ? x : best));
@@ -48,7 +54,7 @@ export function mapColor(hex, v) {
   const [L, C, H] = toOklch(expand(hex));
   const [lo, hi] = v.lightness;
   const L2 = lo + (hi - lo) * Math.min(1, Math.max(0, L));
-  if (C < 0.03) return fromOklch(L2, v.neutral.C, v.neutral.H);
+  if (C < NEUTRAL_CHROMA) return fromOklch(L2, v.neutral.C, v.neutral.H);
   const C2 = Math.min(v.maxChroma, Math.max(0.045, C * 0.6));
   return fromOklch(L2, C2, nearestHue(H));
 }
@@ -64,7 +70,7 @@ function recolorFolder(svg, v) {
 }
 
 function ensureUpstream(root) {
-  const dir = `${root}/.cache/upstream`;
+  const dir = `${root}/.cache/catppuccin`;
   if (!existsSync(dir)) execFileSync('git', ['clone', '-q', UPSTREAM.repo, dir]);
   execFileSync('git', ['-C', dir, 'fetch', '-q', '--depth', '1', 'origin', UPSTREAM.commit]);
   execFileSync('git', ['-C', dir, 'checkout', '-q', UPSTREAM.commit]);
@@ -73,8 +79,8 @@ function ensureUpstream(root) {
 
 export function build(root = new URL('..', import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, '$1')) {
   const src = ensureUpstream(root);
-  const upstreamTheme = JSON.parse(readFileSync(`${src}/icon_themes/material-icon-theme.json`, 'utf8')).themes[0];
-  const files = readdirSync(`${src}/icons`).filter((f) => f.endsWith('.svg'));
+  const upstreamTheme = JSON.parse(readFileSync(`${src}/${UPSTREAM.themeFile}`, 'utf8')).themes.find((t) => t.name === UPSTREAM.theme);
+  const files = readdirSync(`${src}/${UPSTREAM.iconDir}`).filter((f) => f.endsWith('.svg'));
   rmSync(`${root}/icons`, { recursive: true, force: true });
 
   const themes = [];
@@ -82,13 +88,13 @@ export function build(root = new URL('..', import.meta.url).pathname.replace(/^\
     const out = `${root}/icons/${key}`;
     mkdirSync(out, { recursive: true });
     for (const f of files) {
-      const svg = readFileSync(`${src}/icons/${f}`, 'utf8');
+      const svg = readFileSync(`${src}/${UPSTREAM.iconDir}/${f}`, 'utf8');
       const next = DEFAULT_FOLDER_ICONS.has(f)
         ? recolorFolder(svg, v)
         : svg.replace(/#[0-9a-fA-F]{6}\b|#[0-9a-fA-F]{3}\b/g, (m) => mapColor(m, v));
       writeFileSync(`${out}/${f}`, next);
     }
-    const retarget = (value) => (typeof value === 'string' ? value.replace('./icons/', `./icons/${key}/`) : value);
+    const retarget = (value) => (typeof value === 'string' ? value.replace(`./${UPSTREAM.iconDir}/`, `./icons/${key}/`) : value);
     const walk = (node) =>
       Array.isArray(node) ? node.map(walk) : node && typeof node === 'object' ? Object.fromEntries(Object.entries(node).map(([k, x]) => [k, walk(x)])) : retarget(node);
     themes.push({ ...walk(upstreamTheme), name: v.name, appearance: 'dark' });

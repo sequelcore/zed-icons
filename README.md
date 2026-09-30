@@ -6,25 +6,26 @@ for Zed. Two variants:
 - **Sequel Ink Icons** pairs with Sequel Ink: warm neutrals and gold folders.
 - **Sequel Void Icons** pairs with Sequel Void: cool neutrals and emerald folders.
 
-![Original Material icons compared with Sequel Ink Icons and Sequel Void Icons](docs/preview.png)
+![Catppuccin Mocha icons compared with Sequel Ink Icons and Sequel Void Icons](docs/preview.png)
 
 ## How the colors are derived
 
-The icon shapes and file associations come from
-[Material Icon Theme for Zed](https://github.com/zed-extensions/material-icon-theme).
+The line-style icon shapes and file associations come from the Mocha flavor of
+[Catppuccin Icons for Zed](https://github.com/catppuccin/zed-icons).
 `scripts/build.mjs` recolors every icon in OKLCH:
 
 - **Hue** snaps to the seven hues the Sequel editor themes use, so file types keep
   their color family (TypeScript blue, Rust orange) and harmonize with the editor.
 - **Chroma** is capped, so icons stay quieter than code.
 - **Lightness** is compressed into one band, preserving the light and dark parts
-  inside each icon.
+  inside each icon. Thin strokes need more contrast than filled shapes, so the
+  band sits well above the minimum.
 - **Neutrals** take the variant's tint, and default folders take its accent.
 
 ## Accessibility
 
 `scripts/audit.mjs` checks that every color in every icon reaches 3:1 against its
-panel (WCAG 2.2 SC 1.4.11). The lowest is currently 4.85:1. Icon shapes and
+panel (WCAG 2.2 SC 1.4.11). The lowest is currently 7.9:1. Icon shapes and
 labels stay the primary cue, so color is never the only way to tell file types apart.
 
 ## Development
@@ -47,4 +48,4 @@ For local development, run `zed: install dev extension` and select this folder.
 
 ## License
 
-Apache-2.0. See [NOTICE](NOTICE) for attribution to Material Icon Theme.
+MIT. See [NOTICE](NOTICE) for attribution to Catppuccin.
