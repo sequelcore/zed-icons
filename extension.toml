@@ -1,0 +1,7 @@
+id = "sequel-icons"
+name = "Sequel Icons"
+version = "0.1.0"
+schema_version = 1
+authors = ["Sequel"]
+description = "File icons recolored to match the Sequel Ink and Sequel Void themes."
+repository = "https://github.com/sequelcore/zed-icons"

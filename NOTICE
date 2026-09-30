@@ -1,0 +1,11 @@
+Sequel Icons
+Copyright 2026 Sequel
+
+This product is a derivative of Material Icon Theme for Zed
+(https://github.com/zed-extensions/material-icon-theme), licensed under the
+Apache License, Version 2.0, whose icons come from Material Icon Theme for
+VS Code (https://github.com/material-extensions/vscode-material-icon-theme),
+Copyright (c) 2025 Material Extensions, licensed under the MIT License (see licenses/vscode-material-icon-theme-MIT.txt).
+
+Sequel changed the colors of every icon (see scripts/build.mjs). Icon shapes and
+file associations are unchanged from the upstream commit pinned in that script.
