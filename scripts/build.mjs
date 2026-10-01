@@ -103,7 +103,7 @@ export function build(root = new URL('..', import.meta.url).pathname.replace(/^\
   mkdirSync(`${root}/icon_themes`, { recursive: true });
   writeFileSync(
     `${root}/icon_themes/sequel-icons.json`,
-    JSON.stringify({ $schema: 'https://zed.dev/schema/icon_themes/v0.2.0.json', name: 'Sequel Icons', author: 'Sequel', themes }, null, 2) + '\n',
+    JSON.stringify({ $schema: 'https://zed.dev/schema/icon_themes/v0.3.0.json', name: 'Sequel Icons', author: 'Sequel', themes }, null, 2) + '\n',
   );
   return { icons: files.length, themes: themes.map((t) => t.name) };
 }

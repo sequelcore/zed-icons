@@ -1,6 +1,6 @@
 id = "sequel-icons"
 name = "Sequel Icons"
-version = "0.1.0"
+version = "0.1.1"
 schema_version = 1
 authors = ["Sequel"]
 description = "File icons recolored to match the Sequel Ink and Sequel Void themes."
